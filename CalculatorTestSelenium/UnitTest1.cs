@@ -7,6 +7,27 @@ using OpenQA.Selenium.Support.UI;
 
 namespace CalculatorTestSelenium
 {
+    /// <summary>
+    /// Класс для расшифровки навзаний методов доступных на сайте
+    /// </summary>
+    public static class Methods
+    {
+        /// <summary>
+        /// Устанавливает значение в поле для ввода
+        /// </summary>
+        public const string SetValue = "iillllllii";
+
+        /// <summary>
+        /// Возвращает словарь из объектов знака операций
+        /// </summary>
+        public const string GetDictOperations = "return llliilllll";
+
+        /// <summary>
+        /// Возвращает содержимое поля для ввода
+        /// </summary>
+        public const string GetInputValue = "return llllll1lll";
+    }
+
     [TestClass]
     public class UnitTest1
     {
@@ -71,13 +92,28 @@ namespace CalculatorTestSelenium
         [DataRow("ZPT", ",")]
         public void CheckKeysOperation(string key, object value)
         {
-            var obj = firefox.ExecuteScript("return llliilllll");
+            var obj = firefox.ExecuteScript(Methods.GetDictOperations);
             Assert.IsInstanceOfType(obj.GetType(), new Dictionary<string, object>().GetType());
 
             var dictKeysOperation = (Dictionary<string,object>)obj;
 
             Assert.IsTrue(dictKeysOperation.ContainsKey(key));
             Assert.IsTrue(dictKeysOperation[key] == value);
+        }
+
+        [TestMethod]
+        [Description("Проверяет устанавливаются ли значения в поле для ввода")]
+        [DataRow("1")]
+        [DataRow("12")]
+        [DataRow("-1")]
+        [DataRow("-12")]
+        [DataRow("99999999999999999999999")]
+        [DataRow("-99999999999999999999999")]
+        public void SetValue(string value)
+        {
+            firefox.ExecuteScript($"{Methods.SetValue}({value})");
+
+            Assert.AreEqual(value, firefox.ExecuteScript(Methods.GetInputValue));
         }
     }
 }
