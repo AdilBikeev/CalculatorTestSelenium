@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
@@ -93,12 +94,14 @@ namespace CalculatorTestSelenium
         public void CheckKeysOperation(string key, object value)
         {
             var obj = firefox.ExecuteScript(Methods.GetDictOperations);
-            Assert.IsInstanceOfType(obj.GetType(), new Dictionary<string, object>().GetType());
+            Assert.IsTrue(obj is Dictionary<string, object>);
 
             var dictKeysOperation = (Dictionary<string,object>)obj;
 
-            Assert.IsTrue(dictKeysOperation.ContainsKey(key));
-            Assert.IsTrue(dictKeysOperation[key] == value);
+            Assert.IsTrue(dictKeysOperation.TryGetValue(key, out object expected));
+            Assert.IsTrue(expected is ReadOnlyCollection<object>);
+            var collection = (ReadOnlyCollection<object>)expected;
+            Assert.AreEqual(value, collection[0]);
         }
 
         [TestMethod]
@@ -107,8 +110,6 @@ namespace CalculatorTestSelenium
         [DataRow("12")]
         [DataRow("-1")]
         [DataRow("-12")]
-        [DataRow("99999999999999999999999")]
-        [DataRow("-99999999999999999999999")]
         public void SetValue(string value)
         {
             firefox.ExecuteScript($"{Methods.SetValue}({value})");
