@@ -14,9 +14,24 @@ namespace CalculatorTestSelenium
         /// </summary>
         const string url = "https://calculator888.ru/";
 
-        [TestMethod]
-        public void TestMethod1()
+        /// <summary>
+        /// Объект для работы с браузером Firefox
+        /// </summary>
+        FirefoxDriver firefox;
+
+        [TestInitialize]
+        [Description("Вызывается при запуске каждого теста")]
+        public void Setup()
         {
+            firefox = new FirefoxDriver();
+            firefox.Navigate().GoToUrl(url);
+        }
+
+        [TestCleanup]
+        [Description("Вызывается при завершении каждого теста")]
+        public void TearDown()
+        {
+            firefox.Quit();
         }
     }
 }
